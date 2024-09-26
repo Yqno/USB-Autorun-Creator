@@ -46,3 +46,35 @@ def generate_autorun_content(filename: str) -> str:
         return f"[autorun]\nOpen={filename}\nUseAutoPlay=1"
 
     raise ValueError("Unsupported file type. Please use an executable, ZIP file, image, Python script, Java JAR, CMD batch file, or PowerShell script.")
+
+
+def create_autorun_file(base_path: str, content: str) -> None:
+    """Create or overwrite the autorun.inf file in the specified directory."""
+    autorun_path = os.path.join(base_path, "autorun.inf")
+    
+    if os.path.exists(autorun_path):
+        overwrite = input("Warning: 'autorun.inf' already exists. Do you want to overwrite it? (y/n): ").strip().lower()
+        if overwrite != 'y':
+            print("Operation canceled.")
+            return
+
+    try:
+        with open(autorun_path, 'w') as file:
+            file.write(content)
+        print(f"'autorun.inf' file created successfully at {base_path}.")
+    except Exception as e:
+        print(f"Error: Could not create 'autorun.inf' file. {str(e)}")
+
+def main():
+    """Main function to handle user inputs and create the autorun.inf file."""
+    base_path, target_filename = get_input()
+    
+    try:
+        validate_file_path(base_path, target_filename)
+        autorun_content = generate_autorun_content(target_filename)
+        create_autorun_file(base_path, autorun_content)
+    except (FileNotFoundError, ValueError) as e:
+        print(f"Error: {e}")
+
+if __name__ == "__main__":
+    main()
